@@ -1,0 +1,6 @@
+{
+  "middlewares": [
+    "example-httpbin.js"
+  ]
+}
+
