@@ -66,6 +66,20 @@ This file defines which middlewares to load and in what order. The first matchin
 }
 ```
 
+## Example Configuration
+
+The `config-example/` folder contains a working example configuration you can use as a starting point:
+
+```bash
+# Copy the example config to create your own
+cp -r config-example config
+
+# Start the server with your config
+SF_CONFIG=./config node dist/main
+```
+
+The example includes `example-httpbin.js`, a middleware that allows GET and POST requests to [httpbin.org](https://httpbin.org) for testing.
+
 ## Creating Middlewares
 
 Each middleware is a JavaScript file that exports:
