@@ -10,7 +10,7 @@ exports.BearerAuthGuard = void 0;
 const common_1 = require("@nestjs/common");
 let BearerAuthGuard = class BearerAuthGuard {
     canActivate(context) {
-        const token = process.env.SF_AUTH_TOKEN;
+        const token = process.env.SHM_AUTH_TOKEN;
         if (!token) {
             return true;
         }

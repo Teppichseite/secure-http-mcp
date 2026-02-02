@@ -1,2 +1,3 @@
 npm run build-npx
+git add dist-npx/
 npm run format

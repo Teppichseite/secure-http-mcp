@@ -52,6 +52,13 @@ let SecureHttpTool = SecureHttpTool_1 = class SecureHttpTool {
                     : null,
             };
         }
+        if (!middlewareResult.middleware) {
+            return {
+                error: "Middleware result missing middleware information",
+                allowed: false,
+                matchedMiddleware: null,
+            };
+        }
         this.logger.log(`Request allowed by middleware "${middlewareResult.middleware.title}"`);
         await context.reportProgress({ progress: 30, total: 100 });
         try {
@@ -123,11 +130,13 @@ let SecureHttpTool = SecureHttpTool_1 = class SecureHttpTool {
             return {
                 error: `Request failed: ${errorMsg}`,
                 allowed: true,
-                matchedMiddleware: {
-                    title: middlewareResult.middleware.title,
-                    description: middlewareResult.middleware.description,
-                    pattern: middlewareResult.middleware.pattern,
-                },
+                matchedMiddleware: middlewareResult.middleware
+                    ? {
+                        title: middlewareResult.middleware.title,
+                        description: middlewareResult.middleware.description,
+                        pattern: middlewareResult.middleware.pattern,
+                    }
+                    : null,
             };
         }
     }

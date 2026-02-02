@@ -24,7 +24,7 @@ let MiddlewareService = MiddlewareService_1 = class MiddlewareService {
         this.logger = new common_1.Logger(MiddlewareService_1.name);
         this.middlewares = [];
         this.middlewaresDir = path.resolve(middlewaresDir);
-        this.configFile = path.join(this.middlewaresDir, "sf-config.json");
+        this.configFile = path.join(this.middlewaresDir, "shm-config.json");
     }
     async onModuleInit() {
         await this.loadMiddlewares();
@@ -37,7 +37,7 @@ let MiddlewareService = MiddlewareService_1 = class MiddlewareService {
         }
         if (!fs.existsSync(this.configFile)) {
             this.logger.warn(`Config file not found: ${this.configFile}`);
-            this.logger.warn('Create a sf-config.json file with a "middlewares" array listing middleware files in order.');
+            this.logger.warn('Create a shm-config.json file with a "middlewares" array listing middleware files in order.');
             return;
         }
         let config;
@@ -45,12 +45,13 @@ let MiddlewareService = MiddlewareService_1 = class MiddlewareService {
             const configContent = fs.readFileSync(this.configFile, "utf-8");
             config = JSON.parse(configContent);
             if (!Array.isArray(config.middlewares)) {
-                this.logger.error('sf-config.json must contain a "middlewares" array');
+                this.logger.error('shm-config.json must contain a "middlewares" array');
                 return;
             }
         }
         catch (error) {
-            this.logger.error(`Failed to parse sf-config.json: ${error.message}`);
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            this.logger.error(`Failed to parse shm-config.json: ${errorMessage}`);
             return;
         }
         for (const file of config.middlewares) {
@@ -76,7 +77,8 @@ let MiddlewareService = MiddlewareService_1 = class MiddlewareService {
                 this.logger.log(`Loaded middleware: ${middlewareModule.title} (${middlewareModule.pattern})`);
             }
             catch (error) {
-                this.logger.error(`Failed to load middleware ${file}: ${error.message}`);
+                const errorMessage = error instanceof Error ? error.message : String(error);
+                this.logger.error(`Failed to load middleware ${file}: ${errorMessage}`);
             }
         }
         this.logger.log(`Loaded ${this.middlewares.length} middleware(s)`);
@@ -134,11 +136,12 @@ let MiddlewareService = MiddlewareService_1 = class MiddlewareService {
             };
         }
         catch (error) {
-            this.logger.error(`Middleware "${middleware.title}" threw an error: ${error.message}`);
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            this.logger.error(`Middleware "${middleware.title}" threw an error: ${errorMessage}`);
             return {
                 allowed: false,
                 middleware,
-                error: `Middleware "${middleware.title}" threw an error: ${error.message}`,
+                error: `Middleware "${middleware.title}" threw an error: ${errorMessage}`,
             };
         }
     }
