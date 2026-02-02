@@ -1,4 +1,4 @@
 #!/usr/bin/env node
 
-require('../dist/main.js');
+require('../dist-npx/main.js');
 
