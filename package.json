@@ -5,12 +5,23 @@
   "author": "",
   "private": false,
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Teppichseite/secure-http-mcp.git"
+  },
   "bin": {
     "secure-http-mcp": "./bin/secure-http-mcp.js"
   },
+  "files": [
+    "bin",
+    "dist-npx",
+    "package.json",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "nest build",
-    "build-npx": "tsc -p tsconfig-npx.json",
+    "build-npx": "rm -rf dist-npx && tsc -p tsconfig-npx.json",
     "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
