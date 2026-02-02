@@ -10,7 +10,7 @@
 
 module.exports = {
   title: 'HTTPBin Test API',
-  description: 'Allows GET and POST requests to httpbin.org for testing. Automatically adds a custom User-Agent header.',
+  description: 'Allows GET, POST, and PATCH requests to httpbin.org for testing. Automatically adds a custom User-Agent header.',
   pattern: 'https://httpbin.org/**',
 
   /**
@@ -25,12 +25,12 @@ module.exports = {
    * @returns {boolean | {allowed: boolean, reason?: string}} - Return true/false or object with reason
    */
   handle: async (config) => {
-    // Only allow GET and POST methods
-    const allowedMethods = ['GET', 'POST'];
+    // Only allow GET, POST, and PATCH methods
+    const allowedMethods = ['GET', 'POST', 'PATCH'];
     if (!allowedMethods.includes(config.method)) {
       return { 
         allowed: false, 
-        reason: `Method ${config.method} is not allowed. Only GET and POST are permitted.` 
+        reason: `Method ${config.method} is not allowed. Only GET, POST, and PATCH are permitted.` 
       };
     }
 

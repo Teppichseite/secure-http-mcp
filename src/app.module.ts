@@ -1,7 +1,8 @@
-import { DynamicModule, Module } from '@nestjs/common';
-import { McpModule } from '@rekog/mcp-nest';
-import { MiddlewareService, MIDDLEWARES_DIR } from './middleware.service';
-import { SecureHttpTool } from './secure-http.tool';
+import { DynamicModule, Module } from "@nestjs/common";
+import { McpModule, McpTransportType } from "@rekog/mcp-nest";
+import { MiddlewareService, MIDDLEWARES_DIR } from "./middleware.service";
+import { SecureHttpTool } from "./secure-http.tool";
+import { BearerAuthGuard } from "./auth.guard";
 
 export interface SecureFetchModuleOptions {
   configDir: string;
@@ -34,9 +35,16 @@ export class AppModule {
       module: AppModule,
       imports: [
         McpModule.forRoot({
-          name: 'secure-http-mcp',
-          version: '1.0.0',
+          name: "secure-http-mcp",
+          version: "1.0.0",
           instructions: MCP_INSTRUCTIONS,
+          guards: [BearerAuthGuard],
+          transport: [McpTransportType.STREAMABLE_HTTP],
+          streamableHttp: {
+            enableJsonResponse: true,
+            sessionIdGenerator: undefined,
+            statelessMode: true,
+          },
         }),
       ],
       providers: [

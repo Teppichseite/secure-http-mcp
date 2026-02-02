@@ -4,34 +4,30 @@
 
 A secure HTTP mcp executor for autonomoues agents. Have full control which requests are allowed to be performed and which data they contain.
 
-## Why Use This?
+## 💡 Why Use This?
 
 - **Whitelist once** - Allow all tools from this MCP in your agent to be executed by default
 - **Control on server** - Middlewares define exactly which URLs and methods are permitted
 - **Add authentication** - Middlewares can inject API keys, tokens, and headers automatically
 
-## Installation
+## 🚀 Usage
+
+Start directly using the mcp using npx
 
 ```bash
-npm install
-npm run build
-```
-
-## Usage
-
-```bash
-SF_CONFIG=/path/to/config SF_PORT=3000 node dist/main
+SHM_CONFIG=/path/to/config SHM_PORT=3000 npx github:Teppichseite/secure-http-mcp@main
 ```
 
 | Environment Variable | Default | Description |
 |---------------------|---------|-------------|
-| `SF_CONFIG` | **required** | Path to config directory containing middlewares |
-| `SF_PORT` | `3000` | Server port |
+| `SHM_CONFIG` | **required** | Path to config directory containing middlewares |
+| `SHM_PORT` | `3000` | Server port |
+| `SHM_AUTH_TOKEN` | *none* | Bearer token for MCP authentication (optional) |
 
-### Register the MCP
+### 📝 Register the MCP
 
 E.g. in Cursor:
-```python
+```json
 {
   "mcpServers": {
     "secure-http-mcp": {
@@ -42,18 +38,18 @@ E.g. in Cursor:
 ```
 
 
-## Configuration
+## ⚙️ Configuration
 
-### Config Directory Structure
+### 📁 Config Directory Structure
 
 ```
 config/
-├── sf-config.json            # Config file listing middlewares in order
+├── shm-config.json            # Config file listing middlewares in order
 ├── my-api-middleware.js      # Middleware files
 └── another-middleware.js
 ```
 
-### sf-config.json
+### 📄 shm-config.json
 
 This file defines which middlewares to load and in what order. The first matching middleware defiend by the middleware's pattern is used.
 
@@ -66,21 +62,7 @@ This file defines which middlewares to load and in what order. The first matchin
 }
 ```
 
-## Example Configuration
-
-The `config-example/` folder contains a working example configuration you can use as a starting point:
-
-```bash
-# Copy the example config to create your own
-cp -r config-example config
-
-# Start the server with your config
-SF_CONFIG=./config node dist/main
-```
-
-The example includes `example-httpbin.js`, a middleware that allows GET and POST requests to [httpbin.org](https://httpbin.org) for testing.
-
-## Creating Middlewares
+## 🛠️ Creating Middlewares
 
 Each middleware is a JavaScript file that exports:
 
@@ -91,7 +73,7 @@ Each middleware is a JavaScript file that exports:
 | `pattern` | string | Glob pattern to match URLs |
 | `handle` | function | Middleware function |
 
-### Example Middleware
+### 💻 Example Middleware
 
 ```javascript
 // middlewares/github-api.js
@@ -128,7 +110,7 @@ module.exports = {
 };
 ```
 
-### URL Pattern Examples
+### 🌐 URL Pattern Examples
 
 Patterns use glob syntax via [picomatch](https://github.com/micromatch/picomatch):
 
@@ -139,7 +121,7 @@ Patterns use glob syntax via [picomatch](https://github.com/micromatch/picomatch
 | `https://*.example.com/**` | Any subdomain of example.com |
 | `https://api.example.com/users/{id}` | Literal `{id}` in path |
 
-## MCP Tools
+## 🔧 MCP Tools
 
 | Tool | Description |
 |------|-------------|
@@ -147,9 +129,39 @@ Patterns use glob syntax via [picomatch](https://github.com/micromatch/picomatch
 | `list-middlewares` | List all configured middlewares |
 | `reload-middlewares` | Reload middlewares without restarting the server |
 
-## License
+## 👨‍💻 Development
 
-MIT
+Clone the repository and install dependencies:
 
+```bash
+git clone https://github.com/Teppichseite/secure-http-mcp.git
+cd secure-http-mcp
+npm install
+```
 
+Start the development server with hot-reload:
+
+```bash
+SHM_CONFIG=/path/to/config SHM_PORT=3000 npm run start:dev
+```
+
+## 🧪 Testing
+
+Run the test suite with:
+
+```bash
+npm test
+```
+
+For development with watch mode:
+
+```bash
+npm run test:watch
+```
+
+To generate a coverage report:
+
+```bash
+npm run test:cov
+```
 

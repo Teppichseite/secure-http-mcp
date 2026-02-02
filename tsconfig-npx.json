@@ -1,19 +1,19 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "declaration": true,
+    "declaration": false,
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
     "target": "ES2021",
-    "sourceMap": true,
-    "outDir": "./dist",
+    "sourceMap": false,
+    "outDir": "./dist-npx",
     "baseUrl": "./",
-    "incremental": true,
     "skipLibCheck": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true
-  }
+  },
+  "include": ["src"]
 }
 

@@ -3,16 +3,23 @@
   "version": "1.0.0",
   "description": "NestJS MCP Server for secure HTTP requests through configurable middlewares",
   "author": "",
-  "private": true,
+  "private": false,
   "license": "MIT",
+  "bin": {
+    "secure-http-mcp": "./bin/secure-http-mcp.js"
+  },
   "scripts": {
     "build": "nest build",
-    "format": "prettier --write \"src/**/*.ts\"",
+    "build-npx": "tsc -p tsconfig-npx.json",
+    "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
-    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix"
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage",
+    "prepare": "husky"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",
@@ -28,19 +35,18 @@
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",
     "@nestjs/schematics": "^10.0.0",
+    "@nestjs/testing": "^10.0.0",
+    "@types/jest": "^29.5.0",
     "@types/node": "^20.3.1",
     "@types/picomatch": "^3.0.1",
-    "@typescript-eslint/eslint-plugin": "^6.0.0",
-    "@typescript-eslint/parser": "^6.0.0",
-    "eslint": "^8.42.0",
-    "eslint-config-prettier": "^9.0.0",
-    "eslint-plugin-prettier": "^5.0.0",
+    "husky": "^9.1.7",
+    "jest": "^29.5.0",
     "prettier": "^3.0.0",
     "source-map-support": "^0.5.21",
+    "ts-jest": "^29.1.0",
     "ts-loader": "^9.4.3",
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.1.3"
   }
 }
-

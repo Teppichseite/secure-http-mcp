@@ -1,9 +1,9 @@
-import { Injectable, OnModuleInit, Logger, Inject } from '@nestjs/common';
-import * as fs from 'fs';
-import * as path from 'path';
-import * as picomatch from 'picomatch';
+import { Injectable, OnModuleInit, Logger, Inject } from "@nestjs/common";
+import * as fs from "fs";
+import * as path from "path";
+import * as picomatch from "picomatch";
 
-export const MIDDLEWARES_DIR = 'MIDDLEWARES_DIR';
+export const MIDDLEWARES_DIR = "MIDDLEWARES_DIR";
 
 export interface RequestConfig {
   url: string;
@@ -18,7 +18,10 @@ export interface MiddlewareHandleResult {
   reason?: string;
 }
 
-export type MiddlewareHandleReturn = boolean | MiddlewareHandleResult | Promise<boolean | MiddlewareHandleResult>;
+export type MiddlewareHandleReturn =
+  | boolean
+  | MiddlewareHandleResult
+  | Promise<boolean | MiddlewareHandleResult>;
 
 export interface Middleware {
   title: string;
@@ -48,7 +51,7 @@ export class MiddlewareService implements OnModuleInit {
   constructor(@Inject(MIDDLEWARES_DIR) middlewaresDir: string) {
     // Resolve to absolute path
     this.middlewaresDir = path.resolve(middlewaresDir);
-    this.configFile = path.join(this.middlewaresDir, 'sf-config.json');
+    this.configFile = path.join(this.middlewaresDir, "shm-config.json");
   }
 
   async onModuleInit() {
@@ -65,29 +68,33 @@ export class MiddlewareService implements OnModuleInit {
 
     if (!fs.existsSync(this.configFile)) {
       this.logger.warn(`Config file not found: ${this.configFile}`);
-      this.logger.warn('Create a sf-config.json file with a "middlewares" array listing middleware files in order.');
+      this.logger.warn(
+        'Create a shm-config.json file with a "middlewares" array listing middleware files in order.',
+      );
       return;
     }
 
     // Load config file
     let config: MiddlewaresConfig;
     try {
-      const configContent = fs.readFileSync(this.configFile, 'utf-8');
+      const configContent = fs.readFileSync(this.configFile, "utf-8");
       config = JSON.parse(configContent);
-      
+
       if (!Array.isArray(config.middlewares)) {
-        this.logger.error('sf-config.json must contain a "middlewares" array');
+        this.logger.error('shm-config.json must contain a "middlewares" array');
         return;
       }
     } catch (error) {
-      this.logger.error(`Failed to parse sf-config.json: ${error.message}`);
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      this.logger.error(`Failed to parse shm-config.json: ${errorMessage}`);
       return;
     }
 
     // Load middlewares in the order specified in config
     for (const file of config.middlewares) {
       const filePath = path.join(this.middlewaresDir, file);
-      
+
       if (!fs.existsSync(filePath)) {
         this.logger.warn(`Middleware file not found: ${file}`);
         continue;
@@ -96,11 +103,13 @@ export class MiddlewareService implements OnModuleInit {
       try {
         // Clear require cache to allow hot reloading
         delete require.cache[require.resolve(filePath)];
-        
+
         const middlewareModule = require(filePath);
-        
+
         if (!this.isValidMiddleware(middlewareModule)) {
-          this.logger.warn(`Invalid middleware file: ${file} - missing required fields`);
+          this.logger.warn(
+            `Invalid middleware file: ${file} - missing required fields`,
+          );
           continue;
         }
 
@@ -112,23 +121,29 @@ export class MiddlewareService implements OnModuleInit {
           filePath,
         });
 
-        this.logger.log(`Loaded middleware: ${middlewareModule.title} (${middlewareModule.pattern})`);
+        this.logger.log(
+          `Loaded middleware: ${middlewareModule.title} (${middlewareModule.pattern})`,
+        );
       } catch (error) {
-        this.logger.error(`Failed to load middleware ${file}: ${error.message}`);
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
+        this.logger.error(`Failed to load middleware ${file}: ${errorMessage}`);
       }
     }
 
     this.logger.log(`Loaded ${this.middlewares.length} middleware(s)`);
   }
 
-  private isValidMiddleware(module: unknown): module is Omit<Middleware, 'filePath'> {
-    if (typeof module !== 'object' || module === null) return false;
+  private isValidMiddleware(
+    module: unknown,
+  ): module is Omit<Middleware, "filePath"> {
+    if (typeof module !== "object" || module === null) return false;
     const m = module as Record<string, unknown>;
     return (
-      typeof m.title === 'string' &&
-      typeof m.description === 'string' &&
-      typeof m.pattern === 'string' &&
-      typeof m.handle === 'function'
+      typeof m.title === "string" &&
+      typeof m.description === "string" &&
+      typeof m.pattern === "string" &&
+      typeof m.handle === "function"
     );
   }
 
@@ -146,7 +161,8 @@ export class MiddlewareService implements OnModuleInit {
     if (this.middlewares.length === 0) {
       return {
         allowed: false,
-        error: 'No middlewares configured. Create middleware files in the middlewares directory.',
+        error:
+          "No middlewares configured. Create middleware files in the middlewares directory.",
       };
     }
 
@@ -161,29 +177,37 @@ export class MiddlewareService implements OnModuleInit {
 
     try {
       const result = await middleware.handle(config);
-      
+
       // Handle different return types
-      if (typeof result === 'boolean') {
+      if (typeof result === "boolean") {
         return {
           allowed: result,
           middleware,
-          error: !result ? `Middleware "${middleware.title}" denied the request` : undefined,
+          error: !result
+            ? `Middleware "${middleware.title}" denied the request`
+            : undefined,
         };
       }
-      
+
       // Result is an object with allowed and optional reason
       return {
         allowed: result.allowed,
         middleware,
-        error: !result.allowed 
-          ? (result.reason || `Middleware "${middleware.title}" denied the request`)
+        error: !result.allowed
+          ? result.reason ||
+            `Middleware "${middleware.title}" denied the request`
           : undefined,
       };
     } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      this.logger.error(
+        `Middleware "${middleware.title}" threw an error: ${errorMessage}`,
+      );
       return {
         allowed: false,
         middleware,
-        error: `Middleware "${middleware.title}" threw an error: ${error.message}`,
+        error: `Middleware "${middleware.title}" threw an error: ${errorMessage}`,
       };
     }
   }
@@ -192,4 +216,3 @@ export class MiddlewareService implements OnModuleInit {
     return this.middlewares;
   }
 }
-
